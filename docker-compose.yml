@@ -1,0 +1,12 @@
+version: '3.4'
+services:
+  flight-advisor:
+    image: user-management:development
+    build:
+      dockerfile: ./Dockerfile
+      context: ./
+    environment:
+      JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8888"
+    ports:
+      - "8080:8080"
+      - "8888:8888"
