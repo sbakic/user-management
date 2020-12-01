@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "spring.h2.tcp.port",
+      "type": "java.lang.String",
+      "description": "H2 Database TCP port."
+    }
+  ]
+}
