@@ -28,12 +28,20 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "user")
+@Table(name = "application_user")
 public class ApplicationUser implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Size(min = 2, max = 255)
+  @Column(name = "first_name")
+  private String firstName;
+
+  @Size(min = 2, max = 255)
+  @Column(name = "last_name")
+  private String lastName;
 
   @NotNull
   @Size(min = 2, max = 50)
@@ -46,15 +54,8 @@ public class ApplicationUser implements Serializable {
   @Column(name = "password_hash", length = 60, nullable = false)
   private String password;
 
-  @Size(min = 2, max = 255)
-  @Column(name = "first_name")
-  private String firstName;
-
-  @Size(min = 2, max = 255)
-  @Column(name = "last_name")
-  private String lastName;
-
   @Size(min = 2, max = 50)
+  @Column(length = 50)
   private String country;
 
   @Size(min = 2, max = 255)
@@ -62,7 +63,7 @@ public class ApplicationUser implements Serializable {
 
   @JsonProperty(access = Access.WRITE_ONLY)
   @ManyToMany
-  @JoinTable(name = "user_authority", joinColumns = {
+  @JoinTable(name = "application_user_authority", joinColumns = {
       @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
       @JoinColumn(name = "authority_name", referencedColumnName = "name")})
   @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)

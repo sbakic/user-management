@@ -16,3 +16,6 @@ spring:
         web-allow-others: true
     tcp:
       port: 8082
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
