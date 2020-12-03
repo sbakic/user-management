@@ -34,3 +34,12 @@ The service exposes an H2 console on port 8082.
 - URL: jdbc:h2:tcp://localhost:8082/./build/h2/db/user_management
 - User: admin
 - Password: admin
+
+### Initial data
+The database is pre-populated with authorities such as `ROLE_USER`and `ROLE_ADMIN` and a singe test admin user.
+- Username (email): admin@example.com
+- Password (password): admin
+
+## Swagger
+Complete swagger documentation containing all relevant endpoints.
+- URL: http://localhost:8080/swagger-ui.html
