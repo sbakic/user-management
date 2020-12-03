@@ -19,3 +19,15 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+
+application:
+  cors:
+    allowed-origins: '*'
+    allowed-methods: '*'
+    allowed-headers: '*'
+    exposed-headers: 'Authorization,Link'
+    allow-credentials: true
+    max-age: 1800
+  security:
+    base64-secret: fqps8tNGuyy3Rwi3KuieWws5Luj7Jp7naZaTmN0HvtNJ2ZWudUnVhCDy3YOqrne+UHhceYY6jyjbnDei05efVA4NVOFv2oUZhsd8S63IdcgtWCFPqY86/ouFmCy40OcA9WkyOx0A8tuPKayJELhQURfzHUkvOjTaWYgydKWzoHw=
+    token-validity-in-seconds: 86400

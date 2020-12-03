@@ -4,6 +4,46 @@
       "name": "spring.h2.tcp.port",
       "type": "java.lang.String",
       "description": "H2 Database TCP port."
+    },
+    {
+      "name": "application.cors.allowed-origins",
+      "type": "java.lang.String",
+      "description": "Comma-separated list of origins to allow. '*' allows all origins. When not set, CORS support is disabled."
+    },
+    {
+      "name": "application.cors.allowed-methods",
+      "type": "java.lang.String",
+      "description": "Comma-separated list of methods to allow. '*' allows all methods. When not set, defaults to GET."
+    },
+    {
+      "name": "application.cors.allowed-headers",
+      "type": "java.lang.String",
+      "description": "Comma-separated list of headers to allow in a request. '*' allows all headers."
+    },
+    {
+      "name": "application.cors.exposed-headers",
+      "type": "java.lang.String",
+      "description": "Comma-separated list of headers to include in a response."
+    },
+    {
+      "name": "application.cors.allow-credentials",
+      "type": "java.lang.String",
+      "description": "Whether credentials are supported. When not set, credentials are not supported."
+    },
+    {
+      "name": "application.cors.max-age",
+      "type": "java.lang.String",
+      "description": "How long the response from a pre-flight request can be cached by clients. If a duration suffix is not specified, seconds will be used."
+    },
+    {
+      "name": "application.security.base64-secret",
+      "type": "java.lang.String",
+      "description": "Base64 secret key."
+    },
+    {
+      "name": "application.security.token-validity-in-seconds",
+      "type": "java.lang.String",
+      "description": "Access token validity in seconds."
     }
   ]
 }
