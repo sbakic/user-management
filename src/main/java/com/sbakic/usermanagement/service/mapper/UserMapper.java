@@ -9,8 +9,7 @@ import org.mapstruct.Mapping;
 public interface UserMapper {
 
   @Mapping(target = "id", ignore = true)
+  @Mapping(target = "authorities", ignore = true)
   ApplicationUser toUser(UserDto userDto);
-
-  UserDto toDto(ApplicationUser applicationUser);
 
 }

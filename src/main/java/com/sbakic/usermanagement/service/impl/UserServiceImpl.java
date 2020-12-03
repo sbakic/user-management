@@ -12,8 +12,10 @@ import com.sbakic.usermanagement.service.dto.UserDto;
 import com.sbakic.usermanagement.service.mapper.UserMapper;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -55,12 +57,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
               String.format("Email '%s' is already taken.", userDto.getEmail()));
         });
 
-    Authority userAuthority = authorityRepository.findById(AuthorityRole.USER.getRole())
-        .orElseThrow(() -> new RuntimeException("User authority not found."));
+    Set<Authority> authorities = CollectionUtils.isEmpty(userDto.getAuthorities()) ?
+        setDefaultAuthorities() : setProvidedAuthorities(userDto);
 
     ApplicationUser applicationUser = userMapper.toUser(userDto);
     applicationUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
-    applicationUser.setAuthorities(Sets.newHashSet(userAuthority));
+    applicationUser.setAuthorities(authorities);
 
     userRepository.save(applicationUser);
     log.debug("Registered user {}", applicationUser);
@@ -75,8 +77,23 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     return userRepository.findOneWithAuthoritiesByEmail(lowercaseLogin)
         .map(this::createSpringSecurityUser)
         .orElseThrow(() -> new UsernameNotFoundException(
-            "User " + lowercaseLogin + " was not found in the database"));
+            String.format("User '%s' was not found in the database", lowercaseLogin)));
+  }
 
+  private Set<Authority> setDefaultAuthorities() {
+    return Sets.newHashSet(findAuthority(AuthorityRole.USER.getRole()));
+  }
+
+  private Set<Authority> setProvidedAuthorities(UserDto userDto) {
+    return userDto.getAuthorities()
+        .stream()
+        .map(authorityDto -> findAuthority(authorityDto.getName()))
+        .collect(Collectors.toSet());
+  }
+
+  private Authority findAuthority(String authorityName) {
+    return authorityRepository.findById(authorityName)
+        .orElseThrow(() -> new RuntimeException("User authority not found."));
   }
 
   private User createSpringSecurityUser(ApplicationUser applicationUser) {
