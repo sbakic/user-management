@@ -1,8 +1,10 @@
 package com.sbakic.usermanagement.service.dto;
 
 import java.util.Set;
+import lombok.Builder;
 import lombok.Data;
 
+@Builder
 @Data
 public class UserDto {
 
