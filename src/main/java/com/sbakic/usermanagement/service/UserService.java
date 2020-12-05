@@ -9,7 +9,7 @@ public interface UserService {
 
   void registerUser(UserDto userDto);
 
-  List<UserDto> listUsers();
+  List<UserDto> listUsers(UserDto filterUser);
 
   UserDto getUser(String userId);
 

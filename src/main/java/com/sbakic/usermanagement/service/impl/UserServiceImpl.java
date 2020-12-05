@@ -2,6 +2,7 @@ package com.sbakic.usermanagement.service.impl;
 
 import com.google.common.collect.Sets;
 import com.sbakic.usermanagement.domain.ApplicationUser;
+import com.sbakic.usermanagement.domain.ApplicationUser_;
 import com.sbakic.usermanagement.domain.Authority;
 import com.sbakic.usermanagement.exception.EmailAlreadyTakenException;
 import com.sbakic.usermanagement.exception.NotFoundException;
@@ -12,13 +13,18 @@ import com.sbakic.usermanagement.security.SecurityUtils;
 import com.sbakic.usermanagement.service.UserService;
 import com.sbakic.usermanagement.service.dto.UserDto;
 import com.sbakic.usermanagement.service.mapper.UserMapper;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -71,8 +77,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
   }
 
   @Override
-  public List<UserDto> listUsers() {
-    List<ApplicationUser> users = userRepository.findAll();
+  public List<UserDto> listUsers(UserDto filterUser) {
+    Specification<ApplicationUser> user = buildSpecification(filterUser);
+    List<ApplicationUser> users = userRepository.findAll(user);
     log.debug("Listing users {}", users);
 
     return users.stream()
@@ -136,12 +143,32 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         .orElseThrow(() -> new RuntimeException("User authority not found."));
   }
 
-  private User createSpringSecurityUser(ApplicationUser applicationUser) {
-    List<GrantedAuthority> grantedAuthorities = applicationUser.getAuthorities()
-        .stream()
-        .map(authority -> new SimpleGrantedAuthority(authority.getName()))
-        .collect(Collectors.toList());
-    return new User(applicationUser.getEmail(), applicationUser.getPassword(), grantedAuthorities);
+  private Specification<ApplicationUser> buildSpecification(UserDto filterUser) {
+    return (root, query, criteriaBuilder) -> {
+      List<Predicate> predicates = new ArrayList<>();
+      List<String> ignoreFields = Arrays.asList(
+          ApplicationUser_.PASSWORD,
+          ApplicationUser_.AUTHORITIES);
+
+      Arrays.stream(FieldUtils.getAllFields(UserDto.class)).forEach(field -> {
+            String fieldName = field.getName();
+            if (ignoreFields.contains(fieldName)) {
+              return;
+            }
+
+            try {
+              String fieldValue = (String) FieldUtils.readField(filterUser, fieldName, true);
+              if (fieldValue != null) {
+                predicates.add(
+                    criteriaBuilder.like(root.get(fieldName), String.format("%%%s%%", fieldValue)));
+              }
+            } catch (IllegalAccessException e) {
+              throw new RuntimeException(e);
+            }
+          }
+      );
+      return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
+    };
   }
 
   private String validateUser(String userId) {
@@ -151,6 +178,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     return userId;
+  }
+
+  private User createSpringSecurityUser(ApplicationUser applicationUser) {
+    List<GrantedAuthority> grantedAuthorities = applicationUser.getAuthorities()
+        .stream()
+        .map(authority -> new SimpleGrantedAuthority(authority.getName()))
+        .collect(Collectors.toList());
+    return new User(applicationUser.getEmail(), applicationUser.getPassword(),
+        grantedAuthorities);
   }
 
 }

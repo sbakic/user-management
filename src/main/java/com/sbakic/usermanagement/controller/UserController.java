@@ -28,8 +28,8 @@ public class UserController {
 
   @IsAdmin
   @GetMapping("/users")
-  public ResponseEntity<List<UserDto>> listUsers() {
-    return ResponseEntity.ok(userService.listUsers());
+  public ResponseEntity<List<UserDto>> listUsers(UserDto filterUser) {
+    return ResponseEntity.ok(userService.listUsers(filterUser));
   }
 
   @PreAuthorize("hasRole(T(com.sbakic.usermanagement.security.AuthorityRole).ADMIN.name()) or #userId eq @userServiceImpl.DEFAULT_USER")
@@ -42,9 +42,9 @@ public class UserController {
   @PutMapping("/users/{userId}")
   public ResponseEntity<UserDto> updateUser(
       @PathVariable String userId,
-      @RequestBody @Valid UserDto user
+      @RequestBody @Valid UserDto updateUser
   ) {
-    return ResponseEntity.ok(userService.updateUser(userId, user));
+    return ResponseEntity.ok(userService.updateUser(userId, updateUser));
   }
 
 }
