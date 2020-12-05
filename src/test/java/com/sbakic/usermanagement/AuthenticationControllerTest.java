@@ -59,9 +59,9 @@ class AuthenticationControllerTest {
       .password("$2y$10$XcfMSC4rYvOd4edLoFCsDOaToDiSltknNcwXOyOAXNl0L2OSIAVUe")
       .build();
 
-  private final ApplicationUser existingRegularUser = ApplicationUser.builder()
-      .firstName("Existing Regular")
-      .email("existingregular@example.com")
+  private final ApplicationUser existingStandardUser = ApplicationUser.builder()
+      .firstName("Existing Standard")
+      .email("existingstandard@example.com")
       .password("$2y$10$XcfMSC4rYvOd4edLoFCsDOaToDiSltknNcwXOyOAXNl0L2OSIAVUe")
       .build();
 
@@ -81,9 +81,9 @@ class AuthenticationControllerTest {
     authorityRepository.saveAll(Arrays.asList(adminRole, userRole));
 
     existingAdminUser.setAuthorities(Sets.newHashSet(Collections.singletonList(adminRole)));
-    existingRegularUser.setAuthorities(Sets.newHashSet(Collections.singletonList(userRole)));
+    existingStandardUser.setAuthorities(Sets.newHashSet(Collections.singletonList(userRole)));
 
-    userRepository.saveAll(Arrays.asList(existingAdminUser, existingRegularUser));
+    userRepository.saveAll(Arrays.asList(existingAdminUser, existingStandardUser));
   }
 
   @Test
@@ -115,9 +115,9 @@ class AuthenticationControllerTest {
 
   @Test
   @Transactional
-  void registerUser_givenExistingRegularUserAndNonexistentUser_shouldReturnStatus403()
+  void registerUser_givenExistingStandardUserAndNonexistentUser_shouldReturnStatus403()
       throws Exception {
-    MvcResult result = callAuthenticate("existingregular@example.com", "password", status().isOk());
+    MvcResult result = callAuthenticate("existingstandard@example.com", "password", status().isOk());
 
     String idToken = getIdTokenFromResponse(result);
 
@@ -143,7 +143,7 @@ class AuthenticationControllerTest {
 
     String idToken = getIdTokenFromResponse(result);
 
-    callRegister("existingregular@example.com", "password", idToken, status().isConflict());
+    callRegister("existingstandard@example.com", "password", idToken, status().isConflict());
   }
 
   private MvcResult callAuthenticate(String email, String password, ResultMatcher matcher)

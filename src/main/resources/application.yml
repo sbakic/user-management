@@ -15,7 +15,6 @@ logging:
     ROOT: INFO
     com.sbakic.usermanagement: DEBUG
 
-
 server:
   port: 8080
 
