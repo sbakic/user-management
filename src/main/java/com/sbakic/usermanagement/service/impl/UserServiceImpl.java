@@ -94,7 +94,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
   @Override
   public UserDto updateUser(String userId, UserDto updateUser) {
-    return null;
+    String email = validateUser(userId);
+
+    ApplicationUser user = userRepository.findUserByEmail(email)
+        .orElseThrow(() -> new NotFoundException(
+            String.format("Couldn't find user with email '%s'.", email)));
+
+    userMapper.mapToUser(user, updateUser);
+    log.debug("Update user to {}", user);
+
+    userRepository.save(user);
+
+    return userMapper.toDto(user);
   }
 
   @Override

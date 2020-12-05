@@ -20,4 +20,5 @@ public interface UserRepository extends JpaRepository<ApplicationUser, Long> {
   @EntityGraph(attributePaths = "authorities")
   @Nonnull
   List<ApplicationUser> findAll();
+
 }
