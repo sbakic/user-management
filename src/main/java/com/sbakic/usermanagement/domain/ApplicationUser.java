@@ -2,6 +2,7 @@ package com.sbakic.usermanagement.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.sbakic.usermanagement.config.ApplicationProperties;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Column;
@@ -14,6 +15,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,6 +46,7 @@ public class ApplicationUser implements Serializable {
   private String lastName;
 
   @NotNull
+  @Pattern(regexp = ApplicationProperties.LOGIN_REGEX)
   @Size(min = 2, max = 50)
   @Column(length = 50, unique = true, nullable = false)
   private String email;

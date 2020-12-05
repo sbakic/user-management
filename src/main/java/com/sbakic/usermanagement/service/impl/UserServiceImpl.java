@@ -59,11 +59,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
   @Override
   public void registerUser(UserDto userDto) {
-    userRepository.findUserByEmail(userDto.getEmail())
-        .ifPresent(user -> {
-          throw new EmailAlreadyTakenException(
-              String.format("Email '%s' is already taken.", userDto.getEmail()));
-        });
+    validateEmail(userDto.getEmail());
 
     Set<Authority> authorities = CollectionUtils.isEmpty(userDto.getAuthorities()) ?
         setDefaultAuthorities() : setProvidedAuthorities(userDto);
@@ -109,6 +105,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     userMapper.mapToUser(user, updateUser);
     log.debug("Update user to {}", user);
+    validateEmail(user.getEmail());
 
     userRepository.save(user);
 
@@ -125,6 +122,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         .map(this::createSpringSecurityUser)
         .orElseThrow(() -> new UsernameNotFoundException(
             String.format("User '%s' was not found in the database", lowercaseLogin)));
+  }
+
+  private void validateEmail(String email) {
+    userRepository.findUserByEmail(email)
+        .ifPresent(user -> {
+          throw new EmailAlreadyTakenException(
+              String.format("Email '%s' is already taken.", email));
+        });
   }
 
   private Set<Authority> setDefaultAuthorities() {
@@ -167,6 +172,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             }
           }
       );
+
       return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
     };
   }
@@ -176,7 +182,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
       return SecurityUtils.getCurrentUserLogin()
           .orElseThrow(() -> new RuntimeException("Couldn't get current user."));
     }
-
     return userId;
   }
 
@@ -185,8 +190,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         .stream()
         .map(authority -> new SimpleGrantedAuthority(authority.getName()))
         .collect(Collectors.toList());
-    return new User(applicationUser.getEmail(), applicationUser.getPassword(),
-        grantedAuthorities);
+    return new User(applicationUser.getEmail(), applicationUser.getPassword(), grantedAuthorities);
   }
 
 }

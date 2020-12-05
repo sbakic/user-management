@@ -10,6 +10,8 @@ import org.springframework.web.cors.CorsConfiguration;
 @Data
 public class ApplicationProperties {
 
+  public static final String LOGIN_REGEX = "^[\\w-\\.]+@example\\.com$";
+
   private Security security = new Security();
   private CorsConfiguration cors = new CorsConfiguration();
 
