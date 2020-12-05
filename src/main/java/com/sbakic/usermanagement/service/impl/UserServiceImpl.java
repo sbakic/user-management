@@ -4,9 +4,11 @@ import com.google.common.collect.Sets;
 import com.sbakic.usermanagement.domain.ApplicationUser;
 import com.sbakic.usermanagement.domain.Authority;
 import com.sbakic.usermanagement.exception.EmailAlreadyTakenException;
+import com.sbakic.usermanagement.exception.NotFoundException;
 import com.sbakic.usermanagement.repository.AuthorityRepository;
 import com.sbakic.usermanagement.repository.UserRepository;
 import com.sbakic.usermanagement.security.AuthorityRole;
+import com.sbakic.usermanagement.security.SecurityUtils;
 import com.sbakic.usermanagement.service.UserService;
 import com.sbakic.usermanagement.service.dto.UserDto;
 import com.sbakic.usermanagement.service.mapper.UserMapper;
@@ -69,6 +71,33 @@ public class UserServiceImpl implements UserService, UserDetailsService {
   }
 
   @Override
+  public List<UserDto> listUsers() {
+    List<ApplicationUser> users = userRepository.findAll();
+    log.debug("Listing users {}", users);
+
+    return users.stream()
+        .map(userMapper::toDto)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public UserDto getUser(String userId) {
+    String email = validateUser(userId);
+
+    ApplicationUser user = userRepository.findUserByEmail(email)
+        .orElseThrow(() -> new NotFoundException(
+            String.format("Couldn't find user with email '%s'.", email)));
+    log.debug("Get user {}", user);
+
+    return userMapper.toDto(user);
+  }
+
+  @Override
+  public UserDto updateUser(String userId, UserDto updateUser) {
+    return null;
+  }
+
+  @Override
   @Transactional
   public UserDetails loadUserByUsername(final String login) {
     log.debug("Authenticating {}", login);
@@ -102,6 +131,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         .map(authority -> new SimpleGrantedAuthority(authority.getName()))
         .collect(Collectors.toList());
     return new User(applicationUser.getEmail(), applicationUser.getPassword(), grantedAuthorities);
+  }
+
+  private String validateUser(String userId) {
+    if (userId.equals(DEFAULT_USER)) {
+      return SecurityUtils.getCurrentUserLogin()
+          .orElseThrow(() -> new RuntimeException("Couldn't get current user."));
+    }
+
+    return userId;
   }
 
 }

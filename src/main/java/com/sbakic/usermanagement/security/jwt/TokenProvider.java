@@ -39,8 +39,8 @@ public class TokenProvider {
   public void init() {
     String base64Secret = applicationProperties.getSecurity().getBase64Secret();
     byte[] keyBytes = Decoders.BASE64.decode(base64Secret);
-    this.key = Keys.hmacShaKeyFor(keyBytes);
-    this.tokenValidityInMilliseconds =
+    key = Keys.hmacShaKeyFor(keyBytes);
+    tokenValidityInMilliseconds =
         1000 * applicationProperties.getSecurity().getTokenValidityInSeconds();
   }
 
@@ -50,7 +50,7 @@ public class TokenProvider {
         .map(GrantedAuthority::getAuthority)
         .collect(Collectors.joining(","));
 
-    Date validity = new Date(System.currentTimeMillis() + this.tokenValidityInMilliseconds);
+    Date validity = new Date(System.currentTimeMillis() + tokenValidityInMilliseconds);
 
     return Jwts.builder()
         .setSubject(authentication.getName())
