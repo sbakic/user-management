@@ -2,6 +2,8 @@
 
 export COMPOSE_FILE_PATH="${PWD}/docker-compose.yml"
 
+export LOG_FILE_PATH="${PWD}/application.log"
+
 export GRADLE_EXEC="./gradlew"
 
 start() {
@@ -15,6 +17,7 @@ down() {
 }
 
 build() {
+  touch "$LOG_FILE_PATH"
   $GRADLE_EXEC build
 }
 

@@ -2,6 +2,8 @@
 
 SET COMPOSE_FILE_PATH=%CD%\docker-compose.yml
 
+SET LOG_FILE_PATH=%CD%\application.log
+
 SET GRADLE_EXEC=.\gradlew.bat
 
 IF [%1]==[] (
@@ -42,6 +44,7 @@ EXIT /B 0
     )
 EXIT /B 0
 :build
+    type NUL > "%LOG_FILE_PATH%"
     call %GRADLE_EXEC% build
 EXIT /B 0
 :tail

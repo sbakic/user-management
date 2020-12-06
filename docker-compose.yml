@@ -11,3 +11,5 @@ services:
       - "8080:8080"
       - "8082:8082"
       - "8888:8888"
+    volumes:
+      - ./application.log:/home/gradle/application.log

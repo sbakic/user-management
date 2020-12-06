@@ -44,6 +44,11 @@
       "name": "application.security.token-validity-in-seconds",
       "type": "java.lang.String",
       "description": "Access token validity in seconds."
+    },
+    {
+      "name": "log.file",
+      "type": "java.lang.String",
+      "description": "Location of the log file."
     }
   ]
 }
