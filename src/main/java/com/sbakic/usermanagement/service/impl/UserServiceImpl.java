@@ -103,9 +103,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         .orElseThrow(() -> new NotFoundException(
             String.format("Couldn't find user with email '%s'.", email)));
 
+    if (isEmailChanged(updateUser, user)) {
+      validateEmail(updateUser.getEmail());
+    }
+
     userMapper.mapToUser(user, updateUser);
     log.debug("Update user to {}", user);
-    validateEmail(user.getEmail());
 
     userRepository.save(user);
 
@@ -183,6 +186,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
           .orElseThrow(() -> new RuntimeException("Couldn't get current user."));
     }
     return userId;
+  }
+
+  private boolean isEmailChanged(UserDto updateUser, ApplicationUser user) {
+    return updateUser.getEmail() != null && !updateUser.getEmail().equals(user.getEmail());
   }
 
   private User createSpringSecurityUser(ApplicationUser applicationUser) {
