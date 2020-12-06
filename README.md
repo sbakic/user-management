@@ -43,3 +43,13 @@ The database is pre-populated with authorities such as `ROLE_USER`and `ROLE_ADMI
 ## Swagger
 Complete swagger documentation containing all relevant endpoints.
 - URL: http://localhost:8080/swagger-ui.html
+
+### User Management REST API
+
+Action | Method | URL
+ --- | --- | ---
+Create user | **POST** | /api/register
+Authenticate user | **POST** | /api/authenticate
+List users | **GET** | /api/users?firstName=&lastName=&email&=country=&address=
+Get user | **GET** | /api/users/{userId} **OR** /api/users/-me-
+Update user | **PUT** | /api/users/{userId} **OR** /api/users/-me-
